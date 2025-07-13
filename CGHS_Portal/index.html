@@ -154,6 +154,27 @@
     </main>
   </div>
   <div id="toast" class="toast hidden"></div>
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
+    import { getAnalytics }  from "https://www.gstatic.com/firebasejs/11.10.0/firebase-analytics.js";
+    import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey:             "AIzaSyCO_OLScAqxiXUAQB6GNYR8L5NQP-_Nitc",
+      authDomain:         "cghsformcorrection.firebaseapp.com",
+      projectId:          "cghsformcorrection",
+      storageBucket:      "cghsformcorrection.appspot.com",   // typo fixed
+      messagingSenderId:  "32446857601",
+      appId:              "1:32446857601:web:d154b192d10c4fff47e880",
+      measurementId:      "G-VQFWS93P0E"
+    };
+
+    const app       = initializeApp(firebaseConfig);
+    const analytics = getAnalytics(app);
+    const db  = getFirestore(app);
+    const correctionsRef = collection(db, 'cghs_corrections');
+    window.correctionsRef = correctionsRef;
+  </script>
   <script>
     // Utility functions
     function isNumeric(str) {
@@ -258,26 +279,32 @@
       e.target.value = e.target.value.replace(/[^\d]/g, '').slice(0, 10);
     });
     // Form submit
-    form.addEventListener('submit', function(e) {
+    form.addEventListener('submit', async function(e) {
       e.preventDefault();
       if (!validateForm()) return;
-      // Collect data
-      const data = {
-        beneficiaryId: beneficiaryId.value.trim(),
-        dob: dob.value,
-        retirementDate: retirementDate.value,
-      };
-      if (changeName.checked) data.name = nameInput.value.trim();
-      if (changePhone.checked) data.phone = phoneInput.value.trim();
-      if (changeEmail.checked) data.email = emailInput.value.trim();
-      console.log('Form submitted:', data);
-      showToast('Form submitted successfully!');
-      form.reset();
-      // Hide conditional fields
-      toggleField(nameFieldWrapper, nameInput, false);
-      toggleField(phoneFieldWrapper, phoneInput, false);
-      toggleField(emailFieldWrapper, emailInput, false);
-      submitBtn.disabled = true;
+      
+      try {
+        await addDoc(window.correctionsRef, {
+          beneficiary_id: beneficiaryId.value.trim(),
+          dob:            dob.value,
+          dor:            retirementDate.value,
+          new_name:  changeName.checked  ? nameInput.value.trim()  : "-",
+          new_ph_no: changePhone.checked ? phoneInput.value.trim() : "-",
+          new_email: changeEmail.checked ? emailInput.value.trim() : "-",
+          submitted_at:   serverTimestamp()
+        });
+        
+        showToast('Form submitted successfully!');
+        form.reset();
+        // Hide conditional fields
+        toggleField(nameFieldWrapper, nameInput, false);
+        toggleField(phoneFieldWrapper, phoneInput, false);
+        toggleField(emailFieldWrapper, emailInput, false);
+        submitBtn.disabled = true;
+      } catch (error) {
+        console.error('Error submitting form:', error);
+        showToast('Error submitting form. Please try again.');
+      }
     });
     // Toast logic
     function showToast(msg) {
