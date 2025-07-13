@@ -4,7 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "live-server CGHS_Portal --port=3000 --open",
+    "deploy": "git add . && git commit -m \"Auto-deploy: Fix submit button validation\" && git push origin master"
   },
   "keywords": [],
   "author": "",

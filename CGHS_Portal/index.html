@@ -246,20 +246,20 @@
       if (!dob.value) valid = false;
       // Retirement Date
       if (!retirementDate.value) valid = false;
-      // Name (if shown)
+      // Name (if shown and has value)
       if (changeName.checked) {
         const nameVal = nameInput.value.trim();
-        if (!nameVal || !isValidName(nameVal)) valid = false;
+        if (nameVal && !isValidName(nameVal)) valid = false;
       }
-      // Phone (if shown)
+      // Phone (if shown and has value)
       if (changePhone.checked) {
         const phoneVal = phoneInput.value.trim();
-        if (!phoneVal || !isValidPhone(phoneVal)) valid = false;
+        if (phoneVal && !isValidPhone(phoneVal)) valid = false;
       }
-      // Email (if shown)
+      // Email (if shown and has value)
       if (changeEmail.checked) {
         const emailVal = emailInput.value.trim();
-        if (!emailVal || !emailInput.checkValidity()) valid = false;
+        if (emailVal && !emailInput.checkValidity()) valid = false;
       }
       submitBtn.disabled = !valid;
       return valid;
