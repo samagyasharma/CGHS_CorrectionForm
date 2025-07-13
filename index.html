@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CGHS Correction Form</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              DEFAULT: '#0066CC',
+              dark: '#0052a3', // ~8% darker
+            },
+            bg: '#F0F5FF',
+            border: '#E5EAF2',
+          },
+          fontFamily: {
+            poppins: ['Poppins', 'system-ui', 'sans-serif'],
+          },
+          borderRadius: {
+            md: '10px',
+          },
+          boxShadow: {
+            card: '0 6px 32px 0 rgba(0,32,80,0.10)',
+          },
+          keyframes: {
+            'slide-up-fade': {
+              '0%': { opacity: 0, transform: 'translateY(32px)' },
+              '100%': { opacity: 1, transform: 'translateY(0)' },
+            },
+            'toast-in': {
+              '0%': { opacity: 0, transform: 'translateY(40px)' },
+              '100%': { opacity: 1, transform: 'translateY(0)' },
+            },
+            'toast-out': {
+              '0%': { opacity: 1, transform: 'translateY(0)' },
+              '100%': { opacity: 0, transform: 'translateY(40px)' },
+            },
+          },
+          animation: {
+            'slide-up-fade': 'slide-up-fade 0.15s cubic-bezier(.4,1.2,.6,1) both',
+            'toast-in': 'toast-in 0.2s cubic-bezier(.4,1.2,.6,1) both',
+            'toast-out': 'toast-out 0.3s cubic-bezier(.4,1.2,.6,1) both',
+          },
+        },
+      },
+    };
+  </script>
+  <style>
+    html { font-family: 'Poppins', system-ui, sans-serif; }
+    .toast {
+      position: fixed;
+      left: 50%;
+      bottom: 32px;
+      transform: translateX(-50%);
+      z-index: 50;
+      min-width: 220px;
+      max-width: 90vw;
+      pointer-events: none;
+    }
+    .sidebar-scroll {
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      height: calc(100vh - 64px);
+    }
+    @media (max-width: 600px) {
+      .dashboard-main {
+        padding-left: 0 !important;
+      }
+    }
+  </style>
+</head>
+<body class="bg-bg min-h-screen">
+  <!-- Top App Bar -->
+  <header class="w-full h-16 bg-brand text-white flex items-center px-8 shadow-md font-poppins text-xl font-semibold fixed top-0 left-0 z-30">
+    CGHS Correction Form
+  </header>
+  <div class="flex pt-16 min-h-screen">
+    <!-- Sidebar -->
+    <aside class="hidden sm:flex flex-col w-[220px] bg-white border-r border-border sidebar-scroll py-8 px-4 fixed top-16 left-0 bottom-0 z-20">
+      <nav>
+        <ul class="flex flex-col gap-2">
+          <li><a href="#" class="block px-3 py-2 rounded-md text-brand font-medium hover:bg-bg transition">Home</a></li>
+          <li><a href="#" class="block px-3 py-2 rounded-md text-brand font-medium hover:bg-bg transition">Profile</a></li>
+          <li><a href="#" class="block px-3 py-2 rounded-md text-brand font-medium hover:bg-bg transition">Help</a></li>
+        </ul>
+      </nav>
+    </aside>
+    <!-- Main Content -->
+    <main class="dashboard-main flex-1 flex flex-col items-center px-4 sm:pl-[220px] pt-10 pb-10 min-h-[calc(100vh-64px)]">
+      <div class="w-full max-w-[960px] mx-auto">
+        <form id="cghs-form" class="w-full animate-slide-up-fade" novalidate autocomplete="off">
+          <!-- Beneficiary Details Section -->
+          <h2 class="text-brand text-[18px] font-semibold mb-6">Beneficiary Details</h2>
+          <div class="grid gap-6 mb-10">
+            <div>
+              <label for="beneficiary-id" class="block text-sm font-medium text-gray-700 mb-1">Beneficiary ID <span class="text-red-500">*</span></label>
+              <input type="text" id="beneficiary-id" name="beneficiary-id" maxlength="16" inputmode="numeric" required pattern="\\d{1,16}"
+                class="block w-full h-12 rounded-md border border-gray-300 focus:border-brand focus:ring-2 focus:ring-brand focus:outline-none px-3 text-base bg-white transition" />
+            </div>
+            <div>
+              <label for="dob" class="block text-sm font-medium text-gray-700 mb-1">Date of Birth <span class="text-red-500">*</span></label>
+              <input type="date" id="dob" name="dob" required
+                class="block w-full h-12 rounded-md border border-gray-300 focus:border-brand focus:ring-2 focus:ring-brand focus:outline-none px-3 text-base bg-white transition" />
+            </div>
+            <div>
+              <label for="retirement-date" class="block text-sm font-medium text-gray-700 mb-1">Date of Retirement <span class="text-red-500">*</span></label>
+              <input type="date" id="retirement-date" name="retirement-date" required
+                class="block w-full h-12 rounded-md border border-gray-300 focus:border-brand focus:ring-2 focus:ring-brand focus:outline-none px-3 text-base bg-white transition" />
+            </div>
+          </div>
+          <!-- Update Details Section -->
+          <h2 class="text-brand text-[18px] font-semibold mb-4">Update Details</h2>
+          <div class="grid gap-6 mb-10">
+            <div class="flex flex-col gap-2">
+              <label class="inline-flex items-center gap-2">
+                <input type="checkbox" id="change-name" class="accent-brand rounded focus:ring-2 focus:ring-brand" />
+                <span>Name</span>
+              </label>
+              <div id="name-field-wrapper" class="overflow-hidden transition-all duration-200 h-0 opacity-0">
+                <label for="name" class="block text-sm font-medium text-gray-700 mb-1 mt-2">New Name</label>
+                <input type="text" id="name" name="name" maxlength="60" pattern="[A-Za-z ]{1,60}"
+                  class="block w-full h-12 rounded-md border border-gray-300 focus:border-brand focus:ring-2 focus:ring-brand focus:outline-none px-3 text-base bg-white mt-1 transition" aria-disabled="true" disabled />
+              </div>
+              <label class="inline-flex items-center gap-2">
+                <input type="checkbox" id="change-phone" class="accent-brand rounded focus:ring-2 focus:ring-brand" />
+                <span>Phone Number</span>
+              </label>
+              <div id="phone-field-wrapper" class="overflow-hidden transition-all duration-200 h-0 opacity-0">
+                <label for="phone" class="block text-sm font-medium text-gray-700 mb-1 mt-2">New Phone Number</label>
+                <input type="tel" id="phone" name="phone" pattern="^\d{10}$" maxlength="10" inputmode="tel"
+                  class="block w-full h-12 rounded-md border border-gray-300 focus:border-brand focus:ring-2 focus:ring-brand focus:outline-none px-3 text-base bg-white mt-1 transition" aria-disabled="true" disabled />
+              </div>
+              <label class="inline-flex items-center gap-2">
+                <input type="checkbox" id="change-email" class="accent-brand rounded focus:ring-2 focus:ring-brand" />
+                <span>Email ID</span>
+              </label>
+              <div id="email-field-wrapper" class="overflow-hidden transition-all duration-200 h-0 opacity-0">
+                <label for="email" class="block text-sm font-medium text-gray-700 mb-1 mt-2">New Email ID</label>
+                <input type="email" id="email" name="email"
+                  class="block w-full h-12 rounded-md border border-gray-300 focus:border-brand focus:ring-2 focus:ring-brand focus:outline-none px-3 text-base bg-white mt-1 transition" aria-disabled="true" disabled />
+              </div>
+            </div>
+          </div>
+          <div class="flex flex-col sm:flex-row sm:justify-end">
+            <button type="submit" id="submit-btn" class="w-full sm:w-auto sm:min-w-[160px] h-12 rounded-md bg-brand text-white font-medium text-base shadow transition-colors duration-150 hover:bg-brand-dark focus:outline-none focus:ring-2 focus:ring-brand focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed" disabled>Submit</button>
+          </div>
+        </form>
+      </div>
+    </main>
+  </div>
+  <div id="toast" class="toast hidden"></div>
+  <script>
+    // Utility functions
+    function isNumeric(str) {
+      return /^\d+$/.test(str);
+    }
+    function isValidName(str) {
+      return /^[A-Za-z ]{1,60}$/.test(str);
+    }
+    function isValidPhone(str) {
+      return /^\d{10}$/.test(str);
+    }
+    // DOM elements
+    const form = document.getElementById('cghs-form');
+    const beneficiaryId = document.getElementById('beneficiary-id');
+    const dob = document.getElementById('dob');
+    const retirementDate = document.getElementById('retirement-date');
+    const changeName = document.getElementById('change-name');
+    const changePhone = document.getElementById('change-phone');
+    const changeEmail = document.getElementById('change-email');
+    const nameFieldWrapper = document.getElementById('name-field-wrapper');
+    const phoneFieldWrapper = document.getElementById('phone-field-wrapper');
+    const emailFieldWrapper = document.getElementById('email-field-wrapper');
+    const nameInput = document.getElementById('name');
+    const phoneInput = document.getElementById('phone');
+    const emailInput = document.getElementById('email');
+    const submitBtn = document.getElementById('submit-btn');
+    const toast = document.getElementById('toast');
+
+    // Show/hide field with smooth transition
+    function toggleField(wrapper, input, show) {
+      if (show) {
+        wrapper.style.height = wrapper.scrollHeight + 'px';
+        wrapper.style.opacity = '1';
+        input.disabled = false;
+        input.setAttribute('aria-disabled', 'false');
+        setTimeout(() => { input.focus(); }, 220);
+      } else {
+        wrapper.style.height = '0px';
+        wrapper.style.opacity = '0';
+        input.disabled = true;
+        input.setAttribute('aria-disabled', 'true');
+        input.value = '';
+      }
+    }
+    // Checkbox listeners
+    changeName.addEventListener('change', () => {
+      toggleField(nameFieldWrapper, nameInput, changeName.checked);
+      validateForm();
+    });
+    changePhone.addEventListener('change', () => {
+      toggleField(phoneFieldWrapper, phoneInput, changePhone.checked);
+      validateForm();
+    });
+    changeEmail.addEventListener('change', () => {
+      toggleField(emailFieldWrapper, emailInput, changeEmail.checked);
+      validateForm();
+    });
+    // Validation
+    function validateForm() {
+      let valid = true;
+      // Beneficiary ID
+      const benVal = beneficiaryId.value.trim();
+      if (!benVal || !isNumeric(benVal) || benVal.length > 16) {
+        valid = false;
+      }
+      // DOB
+      if (!dob.value) valid = false;
+      // Retirement Date
+      if (!retirementDate.value) valid = false;
+      // Name (if shown)
+      if (changeName.checked) {
+        const nameVal = nameInput.value.trim();
+        if (!nameVal || !isValidName(nameVal)) valid = false;
+      }
+      // Phone (if shown)
+      if (changePhone.checked) {
+        const phoneVal = phoneInput.value.trim();
+        if (!phoneVal || !isValidPhone(phoneVal)) valid = false;
+      }
+      // Email (if shown)
+      if (changeEmail.checked) {
+        const emailVal = emailInput.value.trim();
+        if (!emailVal || !emailInput.checkValidity()) valid = false;
+      }
+      submitBtn.disabled = !valid;
+      return valid;
+    }
+    // Input listeners for validation
+    [beneficiaryId, dob, retirementDate, nameInput, phoneInput, emailInput].forEach(input => {
+      input.addEventListener('input', validateForm);
+    });
+    // Prevent non-numeric input for Beneficiary ID
+    beneficiaryId.addEventListener('input', e => {
+      e.target.value = e.target.value.replace(/[^\d]/g, '').slice(0, 16);
+    });
+    // Prevent non-letter input for Name
+    nameInput.addEventListener('input', e => {
+      e.target.value = e.target.value.replace(/[^A-Za-z ]/g, '').slice(0, 60);
+    });
+    // Prevent non-digit input for Phone
+    phoneInput.addEventListener('input', e => {
+      e.target.value = e.target.value.replace(/[^\d]/g, '').slice(0, 10);
+    });
+    // Form submit
+    form.addEventListener('submit', function(e) {
+      e.preventDefault();
+      if (!validateForm()) return;
+      // Collect data
+      const data = {
+        beneficiaryId: beneficiaryId.value.trim(),
+        dob: dob.value,
+        retirementDate: retirementDate.value,
+      };
+      if (changeName.checked) data.name = nameInput.value.trim();
+      if (changePhone.checked) data.phone = phoneInput.value.trim();
+      if (changeEmail.checked) data.email = emailInput.value.trim();
+      console.log('Form submitted:', data);
+      showToast('Form submitted successfully!');
+      form.reset();
+      // Hide conditional fields
+      toggleField(nameFieldWrapper, nameInput, false);
+      toggleField(phoneFieldWrapper, phoneInput, false);
+      toggleField(emailFieldWrapper, emailInput, false);
+      submitBtn.disabled = true;
+    });
+    // Toast logic
+    function showToast(msg) {
+      toast.textContent = msg;
+      toast.className = 'toast bg-brand text-white px-6 py-3 rounded shadow-lg animate-toast-in';
+      setTimeout(() => {
+        toast.classList.add('animate-toast-out');
+        setTimeout(() => {
+          toast.className = 'toast hidden';
+        }, 300);
+      }, 3000);
+    }
+    // Accessibility: focus outline for all interactive elements
+    document.querySelectorAll('input, button').forEach(el => {
+      el.addEventListener('focus', e => {
+        e.target.classList.add('ring-2', 'ring-brand', 'ring-offset-2');
+      });
+      el.addEventListener('blur', e => {
+        e.target.classList.remove('ring-2', 'ring-brand', 'ring-offset-2');
+      });
+    });
+    // On load, ensure all conditional fields are hidden
+    window.addEventListener('DOMContentLoaded', () => {
+      toggleField(nameFieldWrapper, nameInput, false);
+      toggleField(phoneFieldWrapper, phoneInput, false);
+      toggleField(emailFieldWrapper, emailInput, false);
+      validateForm();
+    });
+  </script>
+</body>
+</html> 
