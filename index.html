@@ -261,19 +261,30 @@
     form.addEventListener('submit', function(e) {
       e.preventDefault();
       if (!validateForm()) return;
-      // Collect data
+
+      // 1️⃣ collect values
       const data = {
-        beneficiaryId: beneficiaryId.value.trim(),
+        beneficiary_id: beneficiaryId.value.trim(),
         dob: dob.value,
-        retirementDate: retirementDate.value,
+        dor: retirementDate.value,
+        new_name: changeName.checked ? nameInput.value.trim() : "-",
+        new_ph_no: changePhone.checked ? phoneInput.value.trim() : "-",
+        new_email: changeEmail.checked ? emailInput.value.trim() : "-"
       };
-      if (changeName.checked) data.name = nameInput.value.trim();
-      if (changePhone.checked) data.phone = phoneInput.value.trim();
-      if (changeEmail.checked) data.email = emailInput.value.trim();
-      console.log('Form submitted:', data);
-      showToast('Form submitted successfully!');
+
+      // 2️⃣ post to API
+      fetch('http://localhost:3000/submit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      })
+      .then(r => r.json())
+      .then(res => {
+        if (res.status === 'success') showToast('Saved!');
+        else alert('Error: ' + res.msg);
+      });
+
       form.reset();
-      // Hide conditional fields
       toggleField(nameFieldWrapper, nameInput, false);
       toggleField(phoneFieldWrapper, phoneInput, false);
       toggleField(emailFieldWrapper, emailInput, false);
